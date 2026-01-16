@@ -12,22 +12,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Clear loading message
       activitiesList.innerHTML = "";
+      activitySelect.innerHTML = '<option value="">-- Select an activity --</option>';
+
+      // Get the activity card template
+      const template = document.getElementById("activity-card-template");
 
       // Populate activities list
       Object.entries(activities).forEach(([name, details]) => {
-        const activityCard = document.createElement("div");
-        activityCard.className = "activity-card";
+        const clone = template.content.cloneNode(true);
+        clone.querySelector(".activity-title").textContent = name;
+        clone.querySelector(".activity-description").textContent = details.description;
 
+        // Add schedule and availability below description
+        const desc = clone.querySelector(".activity-description");
+        const scheduleP = document.createElement("p");
+        scheduleP.innerHTML = `<strong>Schedule:</strong> ${details.schedule}`;
+        desc.insertAdjacentElement("afterend", scheduleP);
         const spotsLeft = details.max_participants - details.participants.length;
+        const availP = document.createElement("p");
+        availP.innerHTML = `<strong>Availability:</strong> ${spotsLeft} spots left`;
+        scheduleP.insertAdjacentElement("afterend", availP);
 
-        activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
-        `;
+        // Render participants as a bulleted list
+        const participantsList = clone.querySelector(".participants-list");
+        if (details.participants.length === 0) {
+          const li = document.createElement("li");
+          li.textContent = "No participants yet.";
+          li.style.fontStyle = "italic";
+          participantsList.appendChild(li);
+        } else {
+          details.participants.forEach(email => {
+            const li = document.createElement("li");
+            li.textContent = email;
+            participantsList.appendChild(li);
+          });
+        }
 
-        activitiesList.appendChild(activityCard);
+        activitiesList.appendChild(clone);
 
         // Add option to select dropdown
         const option = document.createElement("option");
