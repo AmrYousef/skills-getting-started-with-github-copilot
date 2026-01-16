@@ -43,7 +43,36 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           details.participants.forEach(email => {
             const li = document.createElement("li");
-            li.textContent = email;
+            // Email span
+            const emailSpan = document.createElement("span");
+            emailSpan.textContent = email;
+            li.appendChild(emailSpan);
+            // Delete button
+            const delBtn = document.createElement("button");
+            delBtn.className = "delete-participant";
+            delBtn.title = "Remove participant";
+            delBtn.innerHTML = "&#128465;"; // Trash can icon
+            delBtn.addEventListener("click", async (e) => {
+              e.stopPropagation();
+              delBtn.disabled = true;
+              delBtn.style.opacity = 0.5;
+              try {
+                const res = await fetch(`/activities/${encodeURIComponent(name)}/unregister?email=${encodeURIComponent(email)}`, { method: "POST" });
+                if (res.ok) {
+                  fetchActivities(); // Refresh activities list
+                } else {
+                  const result = await res.json();
+                  alert(result.detail || "Failed to remove participant.");
+                  delBtn.disabled = false;
+                  delBtn.style.opacity = 1;
+                }
+              } catch (err) {
+                alert("Network error. Please try again.");
+                delBtn.disabled = false;
+                delBtn.style.opacity = 1;
+              }
+            });
+            li.appendChild(delBtn);
             participantsList.appendChild(li);
           });
         }
@@ -83,6 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        fetchActivities(); // Refresh activities list after signup
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";

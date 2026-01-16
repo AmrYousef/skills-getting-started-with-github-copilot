@@ -80,14 +80,32 @@ section h3 {
   font-size: 15px;
 }
 .participants-list {
-  margin: 8px 0 0 18px;
+  margin: 8px 0 0 0;
   padding-left: 0;
-  list-style-type: disc;
+  list-style-type: none;
   color: #333;
   font-size: 15px;
 }
 .participants-list li {
   margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 4px;
+}
+.delete-participant {
+  background: none;
+  border: none;
+  color: #c62828;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: 10px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  transition: background 0.15s;
+}
+.delete-participant:hover {
+  background: #ffebee;
 }
 
 .activity-card p {
